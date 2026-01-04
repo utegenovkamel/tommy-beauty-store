@@ -1,0 +1,233 @@
+.main {
+  padding-top: calc(var(--header-height) + var(--space-xl));
+  padding-bottom: var(--space-3xl);
+  min-height: 100vh;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: var(--space-md);
+}
+
+.subtitle {
+  font-size: 1.15rem;
+  color: var(--color-text-light);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: var(--space-xl);
+  margin-bottom: var(--space-3xl);
+}
+
+@media (max-width: 900px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+
+.infoCard {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-md);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.contactList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.contactList li {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.contactList li svg {
+  flex-shrink: 0;
+  color: var(--color-primary);
+  margin-top: 2px;
+}
+
+.contactList li div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.contactList li strong {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.contactList li span,
+.contactList li a {
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.contactList li a:hover {
+  color: var(--color-primary-dark);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.whatsappBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--color-whatsapp);
+  color: white;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.whatsappBtn:hover {
+  background: var(--color-whatsapp-hover);
+}
+
+.directionsBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--color-primary);
+  color: white;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.directionsBtn:hover {
+  background: var(--color-primary-dark);
+}
+
+.social {
+  margin-top: auto;
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.social span {
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+}
+
+.socialLinks {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.socialLinks a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--color-bg-alt);
+  color: var(--color-text-light);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.socialLinks a:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.map {
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  min-height: 400px;
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 900px) {
+  .map {
+    min-height: 300px;
+  }
+}
+
+.faq {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+}
+
+.faqTitle {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.faqGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
+}
+
+@media (max-width: 768px) {
+  .faqGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.faqItem {
+  padding: var(--space-lg);
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-md);
+}
+
+.faqItem h3 {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+}
+
+.faqItem p {
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+  line-height: 1.6;
+}
+
