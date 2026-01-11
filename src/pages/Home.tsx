@@ -43,7 +43,9 @@ const features = [
 
 export function Home() {
   const { products } = useStore();
-  const hotProducts = products.filter((p) => p.badge === 'hit' || p.rating && p.rating >= 4.7).slice(0, 8);
+  const hotProducts = products
+    .filter((p) => p.inStock && (p.badge === 'hit' || p.rating && p.rating >= 4.7))
+    .slice(0, 8);
 
   return (
     <main className={styles.main}>

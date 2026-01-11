@@ -187,8 +187,9 @@ export function Admin() {
       try {
         await deleteProduct(id);
         toast.success('Товар удален');
-      } catch (error) {
-        toast.error('Ошибка при удалении');
+      } catch (error: any) {
+        const errorMessage = error?.message || 'Ошибка при удалении';
+        toast.error(errorMessage);
       }
     }
   };

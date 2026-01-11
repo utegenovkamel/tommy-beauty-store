@@ -40,6 +40,9 @@ export function Catalog() {
   const filteredProducts = useMemo(() => {
     let result = [...products];
 
+    // Filter by inStock (only show available products)
+    result = result.filter((p) => p.inStock);
+
     // Filter by category
     if (selectedCategory !== 'all') {
       result = result.filter((p) => p.category === selectedCategory);
@@ -167,7 +170,7 @@ export function Catalog() {
                   onClick={() => handleCategoryChange('all')}
                 >
                   Все товары
-                  <span className={styles.categoryCount}>{products.length}</span>
+                  <span className={styles.categoryCount}>{products.filter((p) => p.inStock).length}</span>
                 </button>
               </li>
               {categories.map((category) => (
@@ -180,7 +183,7 @@ export function Catalog() {
                   >
                     {category.name}
                     <span className={styles.categoryCount}>
-                      {products.filter((p) => p.category === category.slug).length}
+                      {products.filter((p) => p.category === category.slug && p.inStock).length}
                     </span>
                   </button>
                 </li>
@@ -198,7 +201,7 @@ export function Catalog() {
                     onClick={() => handleBrandChange('all')}
                   >
                     Все бренды
-                    <span className={styles.categoryCount}>{products.length}</span>
+                    <span className={styles.categoryCount}>{products.filter((p) => p.inStock).length}</span>
                   </button>
                 </li>
                 {brands.map((brand) => (
@@ -211,7 +214,7 @@ export function Catalog() {
                     >
                       {brand.name}
                       <span className={styles.categoryCount}>
-                        {products.filter((p) => p.brand === brand.slug || p.brand === brand.name).length}
+                        {products.filter((p) => p.inStock && (p.brand === brand.slug || p.brand === brand.name)).length}
                       </span>
                     </button>
                   </li>

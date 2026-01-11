@@ -343,12 +343,20 @@ export const useStore = create<StoreState>()(
       
       deleteProduct: async (id) => {
         try {
+          // Delete the product
+          // If CASCADE is configured in DB, order_items will be deleted automatically
           const { error } = await supabase
             .from('products')
             .delete()
             .eq('id', id);
           
-          if (error) throw error;
+          if (error) {
+            // If FK constraint error, provide helpful message
+            if (error.code === '23503') {
+              throw new Error('Не удалось удалить товар: он используется в заказах. Выполните SQL миграцию supabase_cascade_delete_migration.sql в Supabase SQL Editor для настройки каскадного удаления.');
+            }
+            throw error;
+          }
           
           set((state) => ({
             products: state.products.filter((p) => p.id !== id),
