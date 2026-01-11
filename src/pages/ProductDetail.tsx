@@ -7,6 +7,8 @@ import {
   Plus, 
   ChevronDown, 
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   ArrowLeft,
   MessageCircle,
   Check
@@ -31,6 +33,10 @@ export function ProductDetail() {
   const product = products.find((p) => p.id === Number(id));
   const [quantity, setQuantity] = useState(1);
   const [openSection, setOpenSection] = useState<AccordionSection | null>('description');
+  const [selectedImage, setSelectedImage] = useState(0);
+  
+  // Combine main image with additional images
+  const allImages = product ? [product.image, ...(product.images || [])].filter(Boolean) : [];
   
   const isInCart = cart.some((item) => item.product.id === product?.id);
   
@@ -112,7 +118,10 @@ export function ProductDetail() {
             animate={{ opacity: 1, x: 0 }}
           >
             <div className={styles.mainImage}>
-              <img src={product.image} alt={product.name} />
+              <img 
+                src={allImages[selectedImage] || product.image} 
+                alt={product.name} 
+              />
               {product.badge && (
                 <span className={`${styles.badge} ${styles[product.badge]}`}>
                   {product.badge === 'hit' && 'ХИТ'}
@@ -120,7 +129,48 @@ export function ProductDetail() {
                   {product.badge === 'sale' && `СКИДКА -${Math.round((1 - product.price / (product.oldPrice || product.price)) * 100)}%`}
                 </span>
               )}
+              {allImages.length > 1 && (
+                <>
+                  <button
+                    className={`${styles.navBtn} ${styles.navBtnLeft}`}
+                    onClick={() => setSelectedImage((prev) => (prev === 0 ? allImages.length - 1 : prev - 1))}
+                    aria-label="Предыдущее фото"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  <button
+                    className={`${styles.navBtn} ${styles.navBtnRight}`}
+                    onClick={() => setSelectedImage((prev) => (prev === allImages.length - 1 ? 0 : prev + 1))}
+                    aria-label="Следующее фото"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                  <div className={styles.dots}>
+                    {allImages.map((_, index) => (
+                      <button
+                        key={index}
+                        className={`${styles.dot} ${selectedImage === index ? styles.activeDot : ''}`}
+                        onClick={() => setSelectedImage(index)}
+                        aria-label={`Фото ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
+            {allImages.length > 1 && (
+              <div className={styles.thumbnails}>
+                {allImages.map((img, index) => (
+                  <button
+                    key={index}
+                    className={`${styles.thumbnail} ${selectedImage === index ? styles.active : ''}`}
+                    onClick={() => setSelectedImage(index)}
+                  >
+                    <img src={img} alt={`${product.name} - фото ${index + 1}`} />
+                  </button>
+                ))}
+              </div>
+            )}
           </motion.div>
 
           <motion.div

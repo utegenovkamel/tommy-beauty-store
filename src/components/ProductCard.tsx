@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Check, Heart } from 'lucide-react';
+import { ShoppingBag, Check, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Product } from '../types';
 import { useStore } from '../store/useStore';
@@ -15,6 +16,11 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
   const { addToCart, removeFromCart, cart, toggleFavorite, isFavorite } = useStore();
   const isInCart = cart.some((item) => item.product.id === product.id);
   const isProductFavorite = isFavorite(product.id);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Combine main image with additional images
+  const allImages = [product.image, ...(product.images || [])].filter(Boolean);
+  const hasMultipleImages = allImages.length > 1;
 
   const handleCartClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -51,11 +57,51 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       <Link to={`/product/${product.id}`} className={styles.link}>
         <div className={styles.imageWrapper}>
           <img
-            src={product.image}
+            src={allImages[currentImageIndex] || product.image}
             alt={product.name}
             className={styles.image}
             loading="lazy"
           />
+          {hasMultipleImages && (
+            <>
+              <button
+                className={`${styles.sliderBtn} ${styles.sliderBtnLeft}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCurrentImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
+                }}
+                aria-label="Предыдущее фото"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                className={`${styles.sliderBtn} ${styles.sliderBtnRight}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCurrentImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
+                }}
+                aria-label="Следующее фото"
+              >
+                <ChevronRight size={18} />
+              </button>
+              <div className={styles.dots}>
+                {allImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    className={`${styles.dot} ${currentImageIndex === idx ? styles.activeDot : ''}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setCurrentImageIndex(idx);
+                    }}
+                    aria-label={`Фото ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
           {product.badge && (
             <span className={`${styles.badge} ${styles[product.badge]}`}>
               {getBadgeLabel(product.badge)}

@@ -18,6 +18,7 @@ export interface DbProduct {
   price: number;
   old_price: number | null;
   image: string | null;
+  images: string[] | null;
   badge: 'hit' | 'new' | 'sale' | null;
   in_stock: boolean;
   stock_quantity: number | null;
@@ -126,6 +127,7 @@ export function dbToProduct(db: DbProduct) {
     price: db.price,
     oldPrice: db.old_price ?? undefined,
     image: db.image ?? '',
+    images: db.images ?? [],
     badge: db.badge ?? undefined,
     inStock: db.in_stock,
     stockQuantity: db.stock_quantity ?? undefined,
@@ -146,6 +148,7 @@ export function productToDb(product: Partial<{
   price: number;
   oldPrice?: number;
   image: string;
+  images?: string[];
   badge?: 'hit' | 'new' | 'sale';
   inStock: boolean;
   stockQuantity?: number;
@@ -163,6 +166,7 @@ export function productToDb(product: Partial<{
     price: product.price,
     old_price: product.oldPrice ?? null,
     image: product.image,
+    images: product.images ?? [],
     badge: product.badge ?? null,
     in_stock: product.inStock,
     stock_quantity: product.stockQuantity ?? null,

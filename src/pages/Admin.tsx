@@ -45,6 +45,7 @@ const emptyProduct: Omit<Product, 'id'> = {
   brand: '',
   price: 0,
   image: '',
+  images: [],
   inStock: true,
   stockQuantity: undefined,
   description: '',
@@ -135,6 +136,7 @@ export function Admin() {
         price: product.price,
         oldPrice: product.oldPrice,
         image: product.image,
+        images: product.images || [],
         badge: product.badge,
         inStock: product.inStock,
         stockQuantity: product.stockQuantity,
@@ -847,7 +849,7 @@ export function Admin() {
                     </div>
 
                     <div className={styles.field}>
-                      <label>URL изображения</label>
+                      <label>Главное изображение (URL)</label>
                       <input
                         type="url"
                         value={formData.image}
@@ -918,6 +920,60 @@ export function Admin() {
                       }
                       rows={2}
                     />
+                  </div>
+
+                  <div className={styles.field}>
+                    <label>Дополнительные изображения</label>
+                    <div className={styles.imagesContainer}>
+                      {(formData.images || []).map((url, index) => (
+                        <div key={index} className={styles.imageInputRow}>
+                          <input
+                            type="url"
+                            value={url}
+                            onChange={(e) => {
+                              const newImages = [...(formData.images || [])];
+                              newImages[index] = e.target.value;
+                              setFormData({ ...formData, images: newImages });
+                            }}
+                            placeholder="https://..."
+                          />
+                          {url && (
+                            <img
+                              src={url}
+                              alt={`Preview ${index + 1}`}
+                              className={styles.imagePreviewSmall}
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                          )}
+                          <button
+                            type="button"
+                            className={styles.removeImageBtn}
+                            onClick={() => {
+                              const newImages = (formData.images || []).filter((_, i) => i !== index);
+                              setFormData({ ...formData, images: newImages });
+                            }}
+                            title="Удалить"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        className={styles.addImageBtn}
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            images: [...(formData.images || []), ''],
+                          });
+                        }}
+                      >
+                        <Plus size={16} />
+                        Добавить изображение
+                      </button>
+                    </div>
                   </div>
 
                   <label className={styles.checkbox}>

@@ -35,6 +35,72 @@
   transform: scale(1.05);
 }
 
+/* Image Slider */
+.sliderBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--color-text);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  opacity: 0;
+  transition: all var(--transition-fast);
+  z-index: 5;
+}
+
+.card:hover .sliderBtn {
+  opacity: 1;
+}
+
+.sliderBtn:hover {
+  background: white;
+  box-shadow: var(--shadow-md);
+}
+
+.sliderBtnLeft {
+  left: var(--space-sm);
+}
+
+.sliderBtnRight {
+  right: var(--space-sm);
+}
+
+.dots {
+  position: absolute;
+  bottom: var(--space-sm);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 5;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.dot:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.dot.activeDot {
+  background: white;
+  width: 16px;
+  border-radius: 3px;
+}
+
 .badge {
   position: absolute;
   top: var(--space-sm);
