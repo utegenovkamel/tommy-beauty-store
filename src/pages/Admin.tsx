@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Lock, 
-  LogOut, 
-  Plus, 
-  Pencil, 
-  Trash2, 
-  X, 
+import {
+  Lock,
+  LogOut,
+  Plus,
+  Pencil,
+  Trash2,
+  X,
   Check,
   Package,
   ShoppingCart,
@@ -16,13 +16,15 @@ import {
   Tag,
   Phone,
   MessageCircle,
-  Award
+  Award,
+  Upload
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import type { Product, Category, Brand } from '../types';
 import { formatPrice, formatDate } from '../utils/format';
 import toast from 'react-hot-toast';
 import styles from './Admin.module.css';
+import { uploadImage } from '../lib/supabase';
 
 type Tab = 'products' | 'orders' | 'categories' | 'brands';
 
@@ -97,6 +99,15 @@ export function Admin() {
   const [editingBrandData, setEditingBrandData] = useState<Brand | null>(null);
   const [brandFormData, setBrandFormData] = useState<Omit<Brand, 'id'>>(emptyBrand);
   const [isSavingBrand, setIsSavingBrand] = useState(false);
+
+  // Image upload states
+  const [isUploadingMainImage, setIsUploadingMainImage] = useState(false);
+  const [uploadingImageIndex, setUploadingImageIndex] = useState<number | null>(null);
+  const [isUploadingBrandLogo, setIsUploadingBrandLogo] = useState(false);
+
+  // File input refs
+  const mainImageInputRef = useRef<HTMLInputElement>(null);
+  const brandLogoInputRef = useRef<HTMLInputElement>(null);
 
   // Load all data when authenticated (for tab counters)
   useEffect(() => {
@@ -327,6 +338,78 @@ export function Admin() {
         toast.success('Бренд удален');
       } catch (error) {
         toast.error('Ошибка при удалении');
+      }
+    }
+  };
+
+  // Image upload handlers
+  const handleMainImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Выберите изображение');
+      return;
+    }
+
+    setIsUploadingMainImage(true);
+    try {
+      const url = await uploadImage(file);
+      setFormData({ ...formData, image: url });
+      toast.success('Изображение загружено');
+    } catch (error: any) {
+      toast.error(error.message || 'Ошибка загрузки');
+    } finally {
+      setIsUploadingMainImage(false);
+      if (mainImageInputRef.current) {
+        mainImageInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleAdditionalImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Выберите изображение');
+      return;
+    }
+
+    setUploadingImageIndex(index);
+    try {
+      const url = await uploadImage(file);
+      const newImages = [...(formData.images || [])];
+      newImages[index] = url;
+      setFormData({ ...formData, images: newImages });
+      toast.success('Изображение загружено');
+    } catch (error: any) {
+      toast.error(error.message || 'Ошибка загрузки');
+    } finally {
+      setUploadingImageIndex(null);
+    }
+  };
+
+  const handleBrandLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Выберите изображение');
+      return;
+    }
+
+    setIsUploadingBrandLogo(true);
+    try {
+      const url = await uploadImage(file, 'brand-logos');
+      setBrandFormData({ ...brandFormData, logo: url });
+      toast.success('Логотип загружен');
+    } catch (error: any) {
+      toast.error(error.message || 'Ошибка загрузки');
+    } finally {
+      setIsUploadingBrandLogo(false);
+      if (brandLogoInputRef.current) {
+        brandLogoInputRef.current.value = '';
       }
     }
   };
@@ -849,15 +932,48 @@ export function Admin() {
                     </div>
 
                     <div className={styles.field}>
-                      <label>Главное изображение (URL)</label>
-                      <input
-                        type="url"
-                        value={formData.image}
-                        onChange={(e) =>
-                          setFormData({ ...formData, image: e.target.value })
-                        }
-                        placeholder="https://..."
-                      />
+                      <label>Главное изображение</label>
+                      <div className={styles.imageUploadRow}>
+                        <input
+                          type="url"
+                          value={formData.image}
+                          onChange={(e) =>
+                            setFormData({ ...formData, image: e.target.value })
+                          }
+                          placeholder="URL или загрузите файл"
+                          className={styles.imageUrlInput}
+                        />
+                        <input
+                          ref={mainImageInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleMainImageUpload}
+                          className={styles.hiddenFileInput}
+                        />
+                        <button
+                          type="button"
+                          className={styles.uploadBtn}
+                          onClick={() => mainImageInputRef.current?.click()}
+                          disabled={isUploadingMainImage}
+                          title="Загрузить файл"
+                        >
+                          {isUploadingMainImage ? (
+                            <Loader2 size={18} className={styles.spinner} />
+                          ) : (
+                            <Upload size={18} />
+                          )}
+                        </button>
+                        {formData.image && (
+                          <img
+                            src={formData.image}
+                            alt="Preview"
+                            className={styles.imagePreviewSmall}
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        )}
+                      </div>
                     </div>
 
                     <div className={styles.field}>
@@ -935,8 +1051,28 @@ export function Admin() {
                               newImages[index] = e.target.value;
                               setFormData({ ...formData, images: newImages });
                             }}
-                            placeholder="https://..."
+                            placeholder="URL или загрузите файл"
                           />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleAdditionalImageUpload(e, index)}
+                            className={styles.hiddenFileInput}
+                            id={`additional-image-${index}`}
+                          />
+                          <button
+                            type="button"
+                            className={styles.uploadBtn}
+                            onClick={() => document.getElementById(`additional-image-${index}`)?.click()}
+                            disabled={uploadingImageIndex === index}
+                            title="Загрузить файл"
+                          >
+                            {uploadingImageIndex === index ? (
+                              <Loader2 size={16} className={styles.spinner} />
+                            ) : (
+                              <Upload size={16} />
+                            )}
+                          </button>
                           {url && (
                             <img
                               src={url}
@@ -1074,15 +1210,48 @@ export function Admin() {
                     </div>
 
                     <div className={styles.field}>
-                      <label>URL логотипа</label>
-                      <input
-                        type="url"
-                        value={brandFormData.logo || ''}
-                        onChange={(e) =>
-                          setBrandFormData({ ...brandFormData, logo: e.target.value || undefined })
-                        }
-                        placeholder="https://..."
-                      />
+                      <label>Логотип</label>
+                      <div className={styles.imageUploadRow}>
+                        <input
+                          type="url"
+                          value={brandFormData.logo || ''}
+                          onChange={(e) =>
+                            setBrandFormData({ ...brandFormData, logo: e.target.value || undefined })
+                          }
+                          placeholder="URL или загрузите файл"
+                          className={styles.imageUrlInput}
+                        />
+                        <input
+                          ref={brandLogoInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleBrandLogoUpload}
+                          className={styles.hiddenFileInput}
+                        />
+                        <button
+                          type="button"
+                          className={styles.uploadBtn}
+                          onClick={() => brandLogoInputRef.current?.click()}
+                          disabled={isUploadingBrandLogo}
+                          title="Загрузить файл"
+                        >
+                          {isUploadingBrandLogo ? (
+                            <Loader2 size={18} className={styles.spinner} />
+                          ) : (
+                            <Upload size={18} />
+                          )}
+                        </button>
+                        {brandFormData.logo && (
+                          <img
+                            src={brandFormData.logo}
+                            alt="Logo preview"
+                            className={styles.imagePreviewSmall}
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        )}
+                      </div>
                     </div>
 
                     <div className={styles.field}>
