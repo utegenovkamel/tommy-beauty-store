@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, Menu, X, Phone, Heart } from 'lucide-react';
+import { ShoppingBag, Menu, X, Phone, Heart, Instagram, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store/useStore';
 import styles from './Header.module.css';
@@ -55,6 +55,27 @@ export function Header() {
         </nav>
 
         <div className={styles.actions}>
+          <div className={styles.socialLinks}>
+            <a
+              href="https://www.instagram.com/tommybeauty.store"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.socialLink}
+              aria-label="Instagram"
+            >
+              <Instagram size={20} />
+            </a>
+            <a
+              href="https://t.me/tommybeautystore"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.socialLink}
+              aria-label="Telegram"
+            >
+              <Send size={20} />
+            </a>
+          </div>
+
           <a
             href={`https://wa.me/${WHATSAPP_NUMBER}`}
             target="_blank"
@@ -148,6 +169,31 @@ export function Header() {
                 <Phone size={20} />
                 +7 700 417 04 11
               </motion.a>
+              <motion.div
+                className={styles.mobileSocialLinks}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <a
+                  href="https://www.instagram.com/tommybeauty.store"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.mobileSocialLink}
+                >
+                  <Instagram size={22} />
+                  Instagram
+                </a>
+                <a
+                  href="https://t.me/tommybeautystore"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.mobileSocialLink}
+                >
+                  <Send size={22} />
+                  Telegram
+                </a>
+              </motion.div>
             </nav>
           </motion.div>
         )}
