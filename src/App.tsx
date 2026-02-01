@@ -6,6 +6,7 @@ import { Footer } from './components/Footer';
 import { Cart } from './components/Cart';
 import { OrderForm } from './components/OrderForm';
 import { WhatsAppButton } from './components/WhatsAppButton';
+import { OrderNotificationListener } from './components/OrderNotificationListener';
 import { Home } from './pages/Home';
 import { Catalog } from './pages/Catalog';
 import { ProductDetail } from './pages/ProductDetail';
@@ -25,6 +26,7 @@ function App() {
 
   return (
     <Router>
+      <OrderNotificationListener />
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -42,14 +44,17 @@ function App() {
       <OrderForm />
       <WhatsAppButton />
       <Toaster
-        position="bottom-right"
+        position="top-center"
         toastOptions={{
           duration: 3000,
           style: {
             background: '#2D2A32',
             color: '#fff',
-            borderRadius: '10px',
-            padding: '12px 16px',
+            borderRadius: '12px',
+            padding: '16px 20px',
+            fontSize: '15px',
+            minWidth: '320px',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
           },
           success: {
             iconTheme: {
