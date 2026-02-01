@@ -130,7 +130,6 @@ export function Admin() {
     if (!isAdminAuthenticated) return;
 
     const checkForNewOrders = async () => {
-      const currentCount = orders.length;
       await fetchOrders();
     };
 
