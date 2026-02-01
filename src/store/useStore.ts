@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Product, CartItem, Order, OrderFormData, Category, Brand, SavedOrder, SavedCustomer } from '../types';
 import { supabase, dbToProduct, productToDb, dbToCategory, categoryToDb, dbToBrand, brandToDb } from '../lib/supabase';
+import { sendTelegramNotification } from '../utils/telegram';
 
 // LocalStorage keys
 const SAVED_ORDERS_KEY = 'tommy-saved-orders';
@@ -556,8 +557,14 @@ export const useStore = create<StoreState>()(
             savedCustomer: { name: formData.name, phone: formData.phone },
             cart: [],
           }));
-          
+
           console.log('New order created:', order);
+
+          // Send Telegram notification (non-blocking)
+          sendTelegramNotification(order).catch((error) => {
+            console.error('Failed to send Telegram notification:', error);
+          });
+
           return order;
         } catch (error) {
           console.error('Error creating order:', error);
